@@ -1,7 +1,7 @@
 import streamlit as st
 import regex as re
 from pytubefix import YouTube
-import zipfile
+import zipfile36 as zipfile
 import os
 
 # Função para processar as legendas
