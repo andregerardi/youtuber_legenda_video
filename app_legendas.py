@@ -1,7 +1,7 @@
+import shutil
 import streamlit as st
 import regex as re
 from pytubefix import YouTube
-import zipfile
 import os
 
 # Função para processar as legendas
@@ -40,7 +40,8 @@ def baixar_video(url):
     st.text_area("📝 Legendas", value=text, height=300)
     
     # Criar o arquivo de legendas
-    with open("legendas.txt", "w", encoding="utf-8") as f:
+    legenda_filename = "legendas.txt"
+    with open(legenda_filename, "w", encoding="utf-8") as f:
         f.write(text)
 
     # Baixar o vídeo
@@ -48,21 +49,30 @@ def baixar_video(url):
     video_filename = "video.mp4"
     ys.download(filename=video_filename)
     st.success("Vídeo processado com sucesso!")
+    
+    # Criar uma pasta temporária para armazenar o vídeo e o arquivo de legendas
+    temp_dir = "temp_files"
+    os.makedirs(temp_dir, exist_ok=True)
 
-    # Criar um arquivo zip contendo o vídeo e as legendas
+    # Mover os arquivos para a pasta temporária
+    shutil.move(video_filename, os.path.join(temp_dir, video_filename))
+    shutil.move(legenda_filename, os.path.join(temp_dir, legenda_filename))
+
+    # Criar o arquivo .zip
     zip_filename = "video_e_legendas.zip"
-    with zipfile.ZipFile(zip_filename, 'w') as zipf:
-        zipf.write(video_filename)
-        zipf.write("legendas.txt")
+    shutil.make_archive(zip_filename.replace('.zip', ''), 'zip', temp_dir)
 
     # Exibir o botão para baixar o arquivo zip
-    with open(zip_filename, "rb") as f:
+    with open(f"{zip_filename}", "rb") as f:
         st.download_button(
             label="Baixar vídeo e Legendas",
-            data="file",
+            data=f,
             file_name=zip_filename,
             mime="application/zip"
         )
+
+    # Limpar os arquivos temporários
+    shutil.rmtree(temp_dir)
 
 # título
 st.title("🤖 YouTuber")
@@ -78,7 +88,7 @@ if st.button("Processar"):
         st.error("Por favor, insira uma URL válida.")
 
 # Rodapé
-st.markdown("""
+st.markdown(""" 
 <div style="position: fixed; bottom: 0; left: 0; right: 0; text-align: center; padding: 15px; background-color: #191970;">
     🔗 <a href="https://www.linkedin.com/in/andr%C3%A9-gerardi-ds/" target="_blank" style="color: white;">By André Gerardi</a>
 </div>
