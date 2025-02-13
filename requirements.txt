@@ -1,5 +1,5 @@
 streamlit==1.42.0
 regex==2024.11.6
 pytubefix==8.12.1
-zipfile==3.2.0
+zipfile==3.13.2
 os
