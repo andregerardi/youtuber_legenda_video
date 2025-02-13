@@ -59,7 +59,7 @@ def baixar_video(url):
     with open(zip_filename, "rb") as f:
         st.download_button(
             label="Baixar vídeo e Legendas",
-            data=f,
+            data="file",
             file_name=zip_filename,
             mime="application/zip"
         )
